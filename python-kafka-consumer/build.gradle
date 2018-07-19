@@ -1,4 +1,5 @@
 apply plugin: 'com.linkedin.python'
+apply plugin: 'docker-compose'
 
 dependencies {
     python 'pypi:confluent-kafka:0.11.0'

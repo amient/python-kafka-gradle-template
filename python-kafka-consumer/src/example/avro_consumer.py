@@ -1,12 +1,12 @@
 from confluent_kafka import KafkaError
 from confluent_kafka.avro import AvroConsumer
 from confluent_kafka.avro.serializer import SerializerError
-
+import os
 # from kafka import KafkaConsumer
 
 KAFKA_TOPIC = 'test'
-KAFKA_BROKERS = 'localhost:19092'  # see step 1
-SCHEMA_REGITRY = 'http://localhost:18081'
+KAFKA_BROKERS = 'localhost:' + os.environ['KAFKA_PORT']
+SCHEMA_REGITRY = 'http://localhost:' + os.environ['SCHEMA_REGISTRY_PORT']
 
 
 def main():
@@ -16,6 +16,7 @@ def main():
             'schema.registry.url': SCHEMA_REGITRY})
 
     c.subscribe([KAFKA_TOPIC])
+
 
     running = True
     while running:
@@ -33,3 +34,4 @@ def main():
             running = False
 
     c.close()
+
