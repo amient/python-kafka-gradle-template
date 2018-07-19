@@ -11,6 +11,7 @@ SCHEMA_REGITRY = 'http://localhost:' + os.environ['SCHEMA_REGISTRY_PORT']
 
 def main():
 
+    print("Starting Avro Consumer")
     c = AvroConsumer(
         {'bootstrap.servers': KAFKA_BROKERS, 'group.id': 'test',
             'schema.registry.url': SCHEMA_REGITRY})
