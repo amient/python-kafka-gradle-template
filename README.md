@@ -1,8 +1,12 @@
-# building python programs with gradle
+# Kafka Avro Python Gradle CI Template
 
-## First time on a development machine
+## First time on a development machine (assuming mac)
 
     ./bin/python-setup-mac.sh
+
+## First time on a CI machine (assuming debian)
+
+    ./bin/python-setup-deb.sh
 
 This will generate a local repository mirror of pypi converted to ivy format (gradle doesn't undersatnd pypi format):
     
