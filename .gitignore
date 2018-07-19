@@ -1,0 +1,40 @@
+*.class
+
+# Package Files #
+*.war
+*.ear
+
+out/
+output/
+.data
+.spark
+.kafka
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+target/
+target-idea/
+
+logging.*
+
+# Idea
+.idea
+*.iml
+.DS_Store
+
+# eclipse
+.project
+.settings
+.classpath
+
+# gradle
+.gradle/
+build/
+
+# Python
+__pycache__
+.cache
+activate
+*.egg-info
+

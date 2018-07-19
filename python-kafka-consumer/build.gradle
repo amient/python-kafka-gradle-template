@@ -1,0 +1,7 @@
+apply plugin: 'com.linkedin.python'
+
+dependencies {
+    python 'pypi:confluent-kafka:0.11.0'
+    python 'pypi:avro-python3:1.8.2'
+}
+
