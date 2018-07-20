@@ -139,8 +139,8 @@ class GradleDistribution(Distribution, object):
 
 setup(
     distclass=GradleDistribution,
-    package_dir={'': 'src'},
-    packages=find_packages('src'),
+    package_dir={'': 'src/main'},
+    packages=find_packages('src/main'),
     include_package_data=True,
 
     entry_points={
@@ -149,3 +149,4 @@ setup(
         ],
     }
 )
+
