@@ -11,14 +11,14 @@ SCHEMA=avro.load(os.path.join(os.path.dirname(__file__), '../resources/value_sch
 INPUT_TOPIC='test-input'
 OUTPUT_TOPIC='test-output'
 
-value = {"name": "Value", "favorite_number": 10, "favorite_color": "green", "age": 25}
-
 def main():
 
-
-    print("Starting Avro Producer 2")
     p = AvroProducer({'bootstrap.servers': KAFKA_BROKERS, 'schema.registry.url': SCHEMA_REGITRY})
+
+    value = {"name": "Value", "favorite_number": 10, "favorite_color": "green", "age": 25}
+
     p.produce(topic=INPUT_TOPIC, value=value, value_schema=SCHEMA)
+
     p.flush()
 
 main()
