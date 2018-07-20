@@ -8,37 +8,9 @@ import os
 KAFKA_BROKERS = 'localhost:' + os.environ['KAFKA_PORT']
 SCHEMA_REGISTRY = 'http://localhost:' + os.environ['SCHEMA_REGISTRY_PORT']
 
+SCHEMA=avro.load(os.path.join(os.path.dirname(__file__), '../resources/value_schema.avsc'))
 INPUT_TOPIC='test-input'
 OUTPUT_TOPIC='test-output'
-
-def getSchema():
-    return avro.loads('''{
-  "namespace": "example.avro",
-  "type": "record",
-  "name": "User",
-  "fields": [
-    {
-      "name": "name",
-      "type": "string"
-    },
-    {
-      "name": "favorite_number",
-      "type": [
-        "int",
-        "null"
-      ]
-    },
-    {
-      "name": "favorite_color",
-      "type": "string"
-    },
-    {
-      "name": "age",
-      "type": "int",
-      "default": 18
-    }
-  ]
-} ''')
 
 def main():
 
@@ -49,7 +21,6 @@ def main():
     c = AvroConsumer({'bootstrap.servers': KAFKA_BROKERS, 'group.id': 'example', 'schema.registry.url': SCHEMA_REGISTRY})
     c.subscribe([INPUT_TOPIC])
 
-    schema = getSchema()
     running = True
     print("Running Mirror Loop")
     while running:
@@ -57,7 +28,7 @@ def main():
         try:
             if msg:
                 if not msg.error():
-                    p.produce(topic=OUTPUT_TOPIC, key=None, value=msg.value(), key_schema=None, value_schema=schema)
+                    p.produce(topic=OUTPUT_TOPIC, key=None, value=msg.value(), key_schema=None, value_schema=SCHEMA)
 
                 elif msg.error().code() != KafkaError._PARTITION_EOF:
                     print(msg.error())

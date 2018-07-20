@@ -15,7 +15,7 @@ class Test(unittest.TestCase):
 
             p = AvroProducer({'bootstrap.servers': KAFKA_BROKERS, 'schema.registry.url': SCHEMA_REGISTRY})
             value = {"name": "Value", "favorite_number": 8, "favorite_color": "green", "age": 16}
-            p.produce(topic=INPUT_TOPIC, value=value, value_schema=getSchema())
+            p.produce(topic=INPUT_TOPIC, value=value, value_schema=SCHEMA)
             p.flush()
             print("produced test record")
 
