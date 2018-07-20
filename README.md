@@ -40,6 +40,7 @@ For example:
 
 - create a Python SDK using system interpreter (this works only with gradle 4.0 due to that api used by pygradle plugin)
 - under the interpreter's packages add: requests, confluent-kafka and avro-python3
+- finally mark src as Sources and test as Tests under module structure > Sources
 - use main.py to execute the avro_consumer from the IDE 
     - adding KAFKA_PORT and SCHEMA_REGISTRY_PORT environment variables
     - (these variables are automatically set both in docker and python environment when running gradle test)

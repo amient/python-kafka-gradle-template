@@ -63,6 +63,63 @@ allprojects {
             maven { url "https://oss.sonatype.org/content/repositories/releases" }
             maven { url "https://repository.cloudera.com/artifactory/cloudera-repos/" }
         }
+        plugins.withType(com.avast.gradle.dockercompose.DockerComposePlugin).whenPluginAdded {
+            sourceSets {
+                integrationTest {
+                    resources.srcDir file("src/it/resources")
+                    scala.srcDir file("src/it/scala")
+                    compileClasspath += main.output
+                    runtimeClasspath += main.output
+                }
+            }
+
+            configurations {
+                integrationTestCompile.extendsFrom compile
+            }
+
+            task ittest(dependsOn: ['compileIntegrationTestScala'], type: JavaExec) {
+                main = 'org.scalatest.tools.Runner'
+                args = ['-R', "${project.buildDir}/classes/scala/integrationTest", '-P1', '-o', '-h', "${project.buildDir}/ittest-results", '-u', "${project.buildDir}/ittest-results"]
+                classpath = sourceSets.integrationTest.runtimeClasspath
+                mustRunAfter tasks.test
+                inputs.files(sourceSets.integrationTest.compileClasspath)
+                outputs.dir(file("${project.buildDir}/ittest-results"))
+            }
+
+            dependencies {
+                integrationTestRuntime 'org.pegdown:pegdown:1.6.0'
+                integrationTestCompile project(':common:ittestlib')
+                integrationTestCompile group: 'org.scalatest', name: 'scalatest_' + baseScalaVersion, version: scalaTestVersion
+            }
+
+            dockerCompose.isRequiredBy(ittest)
+
+            composeUp {
+                inputs.files(sourceSets.integrationTest.compileClasspath)
+                outputs.file(file("${project.buildDir}/ittest-started"))
+                doLast { file("${project.buildDir}/ittest-started").text = new Date().format('yyyyMMddHHmmss') }
+            }
+            composeDown {
+                inputs.file(file("${project.buildDir}/ittest-started"))
+                outputs.file(file("${project.buildDir}/ittest-finished"))
+                doLast { file("${project.buildDir}/ittest-finished").text = new Date().format('yyyyMMddHHmmss') }
+            }
+
+            //the following 2 tasks are for when you want to run some it specs in IDE
+            task up(type: Exec, dependsOn: ['composeUp']) {
+                outputs.upToDateWhen { false }
+                commandLine = ['docker', 'ps']
+            }
+
+            task down(type: Exec, dependsOn: ['composeDown']) {
+                outputs.upToDateWhen { false }
+                commandLine = ['docker', 'ps']
+            }
+
+            compile.dependsOn compileIntegrationTestScala
+
+            build.dependsOn ittest
+        }
     }
 
     plugins.withType(com.github.maiflai.ScalaTestPlugin).whenPluginAdded {
@@ -88,8 +145,8 @@ allprojects {
         python {
             testDir = "test"
             pythonEnvironment = [
-                'KAFKA_PORT': KAFKA_PORT,
-                'SCHEMA_REGISTRY_PORT': SCHEMA_REGISTRY_PORT
+                    'KAFKA_PORT'          : KAFKA_PORT,
+                    'SCHEMA_REGISTRY_PORT': SCHEMA_REGISTRY_PORT
             ]
             details {
 //                pythonVersion = '3.6'
@@ -103,7 +160,7 @@ allprojects {
             pyGradlePyPi()
             ivy {
                 url System.getProperty("user.home") + "/pypi-ivy"
-                layout 'pattern' , {
+                layout 'pattern', {
                     artifact '[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]'
                     ivy '[organisation]/[module]/[revision]/[module]-[revision].ivy'
                 }
@@ -121,7 +178,7 @@ allprojects {
             dockerCompose {
                 projectName = project.name
                 stopContainers = true
-                useComposeFiles = [ project.rootProject.rootDir.toPath().resolve('docker-compose.yml')]
+                useComposeFiles = [project.rootProject.rootDir.toPath().resolve('docker-compose.yml')]
                 startedServices = ['zookeeper', 'kafka', 'schema_registry']
                 environment.put 'ZK_PORT', ZK_PORT
                 environment.put 'KAFKA_PORT', KAFKA_PORT
@@ -129,64 +186,6 @@ allprojects {
             }
         }
     }
-
-//    plugins.withType(com.avast.gradle.dockercompose.DockerComposePlugin).whenPluginAdded {
-//        sourceSets {
-//            integrationTest {
-//                resources.srcDir file("src/it/resources")
-//                scala.srcDir file("src/it/scala")
-//                compileClasspath += main.output
-//                runtimeClasspath += main.output
-//            }
-//        }
-//
-//        configurations {
-//            integrationTestCompile.extendsFrom compile
-//        }
-//
-//        task ittest(dependsOn: ['compileIntegrationTestScala'], type: JavaExec) {
-//            main = 'org.scalatest.tools.Runner'
-//            args = ['-R', "${project.buildDir}/classes/scala/integrationTest", '-P1', '-o', '-h', "${project.buildDir}/ittest-results", '-u', "${project.buildDir}/ittest-results"]
-//            classpath = sourceSets.integrationTest.runtimeClasspath
-//            mustRunAfter tasks.test
-//            inputs.files(sourceSets.integrationTest.compileClasspath)
-//            outputs.dir(file("${project.buildDir}/ittest-results"))
-//        }
-//
-//        dependencies {
-//            integrationTestRuntime 'org.pegdown:pegdown:1.6.0'
-//            integrationTestCompile project(':common:ittestlib')
-//            integrationTestCompile group: 'org.scalatest', name: 'scalatest_' + baseScalaVersion, version: scalaTestVersion
-//        }
-//
-//        dockerCompose.isRequiredBy(ittest)
-//
-//        composeUp {
-//            inputs.files(sourceSets.integrationTest.compileClasspath)
-//            outputs.file(file("${project.buildDir}/ittest-started"))
-//            doLast { file("${project.buildDir}/ittest-started").text = new Date().format('yyyyMMddHHmmss') }
-//        }
-//        composeDown {
-//            inputs.file(file("${project.buildDir}/ittest-started"))
-//            outputs.file(file("${project.buildDir}/ittest-finished"))
-//            doLast { file("${project.buildDir}/ittest-finished").text = new Date().format('yyyyMMddHHmmss') }
-//        }
-//
-//        //the following 2 tasks are for when you want to run some it specs in IDE
-//        task up(type: Exec, dependsOn: ['composeUp']) {
-//            outputs.upToDateWhen { false }
-//            commandLine = ['docker', 'ps']
-//        }
-//
-//        task down(type: Exec, dependsOn: ['composeDown']) {
-//            outputs.upToDateWhen { false }
-//            commandLine = ['docker', 'ps']
-//        }
-//
-//        compile.dependsOn compileIntegrationTestScala
-//
-//        build.dependsOn ittest
-//    }
 
     tasks.withType(ScalaCompile) {
         scalaCompileOptions.additionalParameters = ["-feature",
