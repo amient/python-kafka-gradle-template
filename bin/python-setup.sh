@@ -32,4 +32,8 @@ java -jar $DIR/build/pygradle/build/pivy-importer/libs/pivy-importer-0.7.4-SNAPS
     --replace python-dateutil:1.0=python-dateutil:2.4.1 \
     --repo "$LOCAL_REPO_DIR" \
     avro-python3:1.8.2 \
+    avro-gen:0.3.0 \
+    frozendict:1.2 \
+    tzlocal:1.5.1 \
+    datadog:0.21.0 \
     confluent-kafka:0.11.0

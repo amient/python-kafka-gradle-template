@@ -4,5 +4,6 @@ apply plugin: 'docker-compose'
 dependencies {
     python 'pypi:confluent-kafka:0.11.0'
     python 'pypi:avro-python3:1.8.2'
+    python 'pypi:avro-gen:0.3.0'
 }
 
