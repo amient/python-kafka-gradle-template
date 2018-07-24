@@ -145,7 +145,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'example_avro_consumer = example.avro_consumer:main',
+            'example_mirror = example.mirror:main',
         ],
     }
 )
