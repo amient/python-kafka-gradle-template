@@ -42,5 +42,5 @@ For example:
 - under the interpreter's packages add: requests, confluent-kafka and avro-python3
 - finally mark src as Sources and test as Tests under module structure > Sources
 - use main.py to execute the avro_consumer from the IDE 
-    - adding KAFKA_PORT and SCHEMA_REGISTRY_PORT environment variables
+    - adding KAFKA_BOOTSTRAP_SERVERS and SCHEMA_REGISTRY_URL environment variables
     - (these variables are automatically set both in docker and python environment when running gradle test)

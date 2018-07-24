@@ -10,10 +10,10 @@ class Test(unittest.TestCase):
         m = Process(target=main, args=())
         m.start()
         try:
-            c = AvroConsumer({'bootstrap.servers': KAFKA_BROKERS, 'group.id': 'ittest', 'schema.registry.url': SCHEMA_REGISTRY})
+            c = AvroConsumer({'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS, 'group.id': 'ittest', 'schema.registry.url': SCHEMA_REGISTRY_URL})
             c.subscribe([OUTPUT_TOPIC])
 
-            p = AvroProducer({'bootstrap.servers': KAFKA_BROKERS, 'schema.registry.url': SCHEMA_REGISTRY})
+            p = AvroProducer({'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS, 'schema.registry.url': SCHEMA_REGISTRY_URL})
             value = {"name": "Value", "favorite_number": 8, "favorite_color": "green", "age": 16}
             p.produce(topic=INPUT_TOPIC, value=value, value_schema=SCHEMA)
             p.flush()

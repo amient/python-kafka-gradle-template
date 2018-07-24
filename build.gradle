@@ -28,8 +28,8 @@ allprojects {
                 pythonVersion = '3.6'
             }
             pythonEnvironment = [
-                    'KAFKA_PORT'          : KAFKA_PORT,
-                    'SCHEMA_REGISTRY_PORT': SCHEMA_REGISTRY_PORT
+                    'KAFKA_BOOTSTRAP_SERVERS'   : 'PLAINTEXT://localhost:' + KAFKA_PORT,
+                    'SCHEMA_REGISTRY_URL'       : 'http://localhost:' + SCHEMA_REGISTRY_PORT
             ]
         }
 
