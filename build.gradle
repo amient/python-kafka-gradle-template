@@ -54,6 +54,7 @@ allprojects {
 
         plugins.withType(com.avast.gradle.dockercompose.DockerComposePlugin).whenPluginAdded {
             dockerCompose.isRequiredBy(test)
+            dockerCompose.isRequiredBy(pytest)
             dockerCompose {
                 projectName = project.name
                 stopContainers = true
