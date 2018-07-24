@@ -22,6 +22,7 @@ class Test(unittest.TestCase):
             msg = c.poll(30)
             self.assertNotEqual(msg, None)
             self.assertNotEqual(msg.value(), None)
+            print(msg.value())
             #fixme for some reason sometimes the kafka avro consumer doesn't decode the bytes!
             #self.assertEqual(msg.value(), value)
 

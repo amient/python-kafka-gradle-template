@@ -36,4 +36,5 @@ java -jar $DIR/build/pygradle/build/pivy-importer/libs/pivy-importer-0.7.4-SNAPS
     frozendict:1.2 \
     tzlocal:1.5.1 \
     datadog:0.21.0 \
-    confluent-kafka:0.11.0
+    confluent-kafka:0.11.0 \
+    confluent-kafka:0.11.5
