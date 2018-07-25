@@ -13,11 +13,11 @@ setup.py then can be comitted to the repository and afterwards doesn't have to b
 already been generated for the provided example.
 
 
-## building is simple afterwards
+## building python modules
 
     ./gradlew :python-kafka-mirror:build
 
-## running the application using generated venv
+## running python moudles using generated venv
 
 The application requires some environmental variables so they need to be exported first
 
@@ -29,7 +29,7 @@ The application requires some environmental variables so they need to be exporte
 ## Note on local pypi repository
 
 The build phase includes a local repoistory generator which uses pygradle pivy converter. This script can be found
-in the `./bin` folder.
+in the root of the project.
 
 
 ## IDE Setup
