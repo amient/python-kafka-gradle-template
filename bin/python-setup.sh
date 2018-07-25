@@ -4,15 +4,14 @@ reuquired=($@)
 
 ######################################################################
 
-DIR="$( cd $(dirname ${BASH_SOURCE[0]}) && pwd )"
 LOCAL_REPO_DIR="$HOME/pypi-ivy"
 PIVY_IMPORTER_VERSION="0.7.4"
 
-if [ ! -f "$DIR/build/pygradle/build/pivy-importer/libs/pivy-importer-$PIVY_IMPORTER_VERSION-SNAPSHOT-all.jar" ]; then
-    if [ ! -d "$DIR/build/pygradle" ]; then
-        git clone https://github.com/linkedin/pygradle.git $DIR/build/pygradle
+if [ ! -f "$LOCAL_REPO_DIR/pygradle/build/pivy-importer/libs/pivy-importer-$PIVY_IMPORTER_VERSION-SNAPSHOT-all.jar" ]; then
+    if [ ! -d "$LOCAL_REPO_DIR/pygradle" ]; then
+        git clone https://github.com/linkedin/pygradle.git $LOCAL_REPO_DIR/pygradle
     fi
-    cd "$DIR/build/pygradle"
+    cd "$LOCAL_REPO_DIR/pygradle"
     git checkout "v$PIVY_IMPORTER_VERSION"
     ./gradlew build --exclude-task test --exclude-task integTest
     if [ $? -ne 0 ]; then
@@ -43,7 +42,7 @@ do
 done
 
 if [ ! -z "$do_update" ]; then
-java -jar $DIR/build/pygradle/build/pivy-importer/libs/pivy-importer-0.7.4-SNAPSHOT-all.jar \
+java -jar $LOCAL_REPO_DIR/pygradle/build/pivy-importer/libs/pivy-importer-$PIVY_IMPORTER_VERSION-SNAPSHOT-all.jar \
     --replace Babel:0.8=Babel:1.0 \
     --replace python-dateutil:1.0=python-dateutil:2.4.1 \
     --repo "$LOCAL_REPO_DIR" \
