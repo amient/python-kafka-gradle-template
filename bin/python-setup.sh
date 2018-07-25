@@ -1,15 +1,8 @@
 #!/usr/bin/env bash
 
-################################################################################################################
+reuquired=($@)
 
-reuquired=( "avro-python3:1.8.2" \
-            "avro-gen:0.3.0" \
-            "confluent-kafka:0.11.0" \
-            "confluent-kafka:0.11.5")
-
-################################################################################################################
-
-
+######################################################################
 
 DIR="$( cd $(dirname ${BASH_SOURCE[0]}) && pwd )"
 LOCAL_REPO_DIR="$HOME/pypi-ivy"
@@ -41,8 +34,11 @@ find $LOCAL_REPO_DIR -name *.tar.gz | while read file; do tar -tzf $file  > /dev
 do_update=""
 for package in "${reuquired[@]}"
 do
-    if [ ! -d "$LOCAL_REPO_DIR/pypi/${package//://}" ]; then
+    package_dir="$LOCAL_REPO_DIR/pypi/${package//://}"
+    if [ ! -d "$package_dir" ]; then
         do_update="$do_update $package"
+    else
+        echo "$package      already present: $package_dir"
     fi
 done
 

@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 buildscript {
     repositories {
         jcenter()
@@ -56,7 +58,28 @@ allprojects {
 
         }
 
+        def pypiDependencyList = project.configurations.python.dependencies.stream()
+                .filter { i -> i.group == "pypi" }
+                .map{ i -> i.name + ":" + i.version + " " }
+                .collect(java.util.stream.Collectors.joining(" "))
+
+        task pypiSetup(type: Exec) {
+            workingDir "${rootProject.projectDir}/bin"
+            if (Os.isFamily(Os.FAMILY_MAC)) {
+                commandLine './python-setup-mac.sh', pypiDependencyList
+            } else if  (Os.isFamily(Os.FAMILY_UNIX)) {
+                //TODO different scripts for different Unix types, this one is only for Debian
+                commandLine './python-setup-deb.sh', pypiDependencyList
+            } else if  (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine './python-setup-win.bat', pypiDependencyList //TODO windows version
+            }
+        }
+
         task test(type: com.linkedin.gradle.python.tasks.PyTestTask)
+
+        pytest.dependsOn pypiSetup
+        test.dependsOn pypiSetup
+        build.dependsOn pypiSetup
 
         plugins.withType(com.avast.gradle.dockercompose.DockerComposePlugin).whenPluginAdded {
             dockerCompose.isRequiredBy(test)
