@@ -13,7 +13,7 @@ if [ ! -f "$LOCAL_REPO_DIR/pygradle/build/pivy-importer/libs/pivy-importer-$PIVY
     fi
     cd "$LOCAL_REPO_DIR/pygradle"
     git checkout "v$PIVY_IMPORTER_VERSION"
-    ./gradlew build --exclude-task test --exclude-task integTest
+    ./gradlew :pivy-importer:build --exclude-task test --exclude-task integTest
     if [ $? -ne 0 ]; then
         echo "failed to build pivy-importer"
         exit 1;

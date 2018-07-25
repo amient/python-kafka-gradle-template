@@ -1,5 +1,3 @@
-import org.apache.tools.ant.taskdefs.condition.Os
-
 buildscript {
     repositories {
         jcenter()
@@ -14,6 +12,8 @@ buildscript {
 task wrapper(type: Wrapper) {
     gradleVersion = '4.8'
 }
+
+import org.apache.tools.ant.taskdefs.condition.Os
 
 allprojects {
 
@@ -30,8 +30,8 @@ allprojects {
                 pythonVersion = '3.6'
             }
             pythonEnvironment = [
-                    'KAFKA_BOOTSTRAP_SERVERS'   : 'PLAINTEXT://localhost:' + KAFKA_PORT,
-                    'SCHEMA_REGISTRY_URL'       : 'http://localhost:' + SCHEMA_REGISTRY_PORT
+                    'KAFKA_BOOTSTRAP_SERVERS': 'PLAINTEXT://localhost:' + KAFKA_PORT,
+                    'SCHEMA_REGISTRY_URL'    : 'http://localhost:' + SCHEMA_REGISTRY_PORT
             ]
         }
 
@@ -54,26 +54,28 @@ allprojects {
 
         task test(type: com.linkedin.gradle.python.tasks.PyTestTask)
 
-        def pypiDependencyList = project.configurations.python.dependencies.stream()
-                .filter { i -> i.group == "pypi" }
-                .map{ i -> i.name + ":" + i.version + " " }
-                .collect(java.util.stream.Collectors.joining(" "))
-
-        task pypiSetup(type: Exec) {
+        task PyPipiSetup(type: Exec) {
             workingDir "${rootProject.projectDir}"
+            dependsOn 'configurePyPipiSetup'
             if (Os.isFamily(Os.FAMILY_MAC)) {
-                commandLine './python-setup-mac.sh', pypiDependencyList
-            } else if  (Os.isFamily(Os.FAMILY_UNIX)) {
-                //TODO different scripts for different Unix types, this one is only for Debian
-                commandLine './python-setup-deb.sh', pypiDependencyList
-            } else if  (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine './python-setup-win.bat', pypiDependencyList //TODO windows version
+                executable './python-setup-mac.sh'
+            } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+                executable './python-setup-deb.sh'
+            } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                executable './python-setup-win.bat'
             }
         }
-
-        pytest.dependsOn pypiSetup
-        test.dependsOn pypiSetup
-        build.dependsOn pypiSetup
+        task configurePyPipiSetup {
+            doLast {
+                PyPipiSetup.args project.configurations.python.dependencies.stream()
+                        .filter { i -> i.group == "pypi" }
+                        .map { i -> i.name + ":" + i.version + " " }
+                        .collect(java.util.stream.Collectors.joining(" "))
+            }
+        }
+        pytest.dependsOn PyPipiSetup
+        test.dependsOn PyPipiSetup
+        build.dependsOn PyPipiSetup
 
         plugins.withType(com.avast.gradle.dockercompose.DockerComposePlugin).whenPluginAdded {
             dockerCompose.isRequiredBy(test)
