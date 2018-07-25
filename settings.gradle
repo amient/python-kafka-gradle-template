@@ -1,1 +1,1 @@
-include ':python-kafka-consumer'
+include ':python-kafka-mirror'

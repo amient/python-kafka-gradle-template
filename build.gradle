@@ -50,13 +50,9 @@ allprojects {
 
         dependencies {
             python 'pypi:requests:2.18.4'
-            python 'pypi:avro-python3:1.8.2'
-            python ('pypi:confluent-kafka:0.11.5') {
-                exclude module: 'futures'
-                exclude module: 'enum34'
-            }
-
         }
+
+        task test(type: com.linkedin.gradle.python.tasks.PyTestTask)
 
         def pypiDependencyList = project.configurations.python.dependencies.stream()
                 .filter { i -> i.group == "pypi" }
@@ -64,7 +60,7 @@ allprojects {
                 .collect(java.util.stream.Collectors.joining(" "))
 
         task pypiSetup(type: Exec) {
-            workingDir "${rootProject.projectDir}/bin"
+            workingDir "${rootProject.projectDir}"
             if (Os.isFamily(Os.FAMILY_MAC)) {
                 commandLine './python-setup-mac.sh', pypiDependencyList
             } else if  (Os.isFamily(Os.FAMILY_UNIX)) {
@@ -74,8 +70,6 @@ allprojects {
                 commandLine './python-setup-win.bat', pypiDependencyList //TODO windows version
             }
         }
-
-        task test(type: com.linkedin.gradle.python.tasks.PyTestTask)
 
         pytest.dependsOn pypiSetup
         test.dependsOn pypiSetup
@@ -88,7 +82,6 @@ allprojects {
                 projectName = project.name
                 stopContainers = true
                 useComposeFiles = [project.rootProject.rootDir.toPath().resolve('docker-compose.yml')]
-                startedServices = ['zookeeper', 'kafka', 'schema_registry']
                 environment.put 'ZK_PORT', ZK_PORT
                 environment.put 'KAFKA_PORT', KAFKA_PORT
                 environment.put 'SCHEMA_REGISTRY_PORT', SCHEMA_REGISTRY_PORT
